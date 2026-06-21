@@ -57,4 +57,51 @@ Documents the key columns used in this project. Only fields relevant to the anal
 
 ---
 
-*Last updated: 2026-06-10. Update this file whenever a new column is introduced into analysis.*
+## Processed Building Permit Metrics
+
+These files are derived analytical outputs produced by `notebooks/03_building_permits_preparation_and_analysis.ipynb`. Each is a small, validated six-row summary table aggregated from the raw Issued Building Permits dataset. They are saved to `data/processed/` so that downstream notebooks, visualisations, and dashboard scripts can read them directly without re-running the full filter and aggregation pipeline.
+
+---
+
+### File: `data/processed/permit_count_by_year.csv`
+
+**Source raw dataset:** `data/raw/issued_building_permits_raw.csv`  
+**Analytical grain:** One row per `IssueYear`  
+**Time window:** 2019–2024  
+**Residential filter:** `PropertyUse` contains `"Dwelling Uses"`, case-insensitive, including mixed-use records where `"Dwelling Uses"` appears as part of a longer string
+
+| Column | Type | Plain-English Meaning |
+|---|---|---|
+| `IssueYear` | int | Calendar year when the permit was issued |
+| `permit_count` | int | Number of unique `PermitNumber` values for residential permits issued in that year |
+
+**Caveats:**
+- `permit_count` measures issued permit activity, not completed housing units. A permit is approved before construction begins and may never result in a finished dwelling.
+- One permit may represent one unit, multiple units, or a non-unit residential alteration such as a renovation or addition. The metric reflects the breadth of permitting activity, not the volume of dwelling units delivered.
+
+---
+
+### File: `data/processed/permit_project_value_by_year.csv`
+
+**Source raw dataset:** `data/raw/issued_building_permits_raw.csv`  
+**Analytical grain:** One row per `IssueYear`  
+**Time window:** 2019–2024  
+**Residential filter:** `PropertyUse` contains `"Dwelling Uses"`, case-insensitive, including mixed-use records
+
+| Column | Type | Plain-English Meaning |
+|---|---|---|
+| `IssueYear` | int | Calendar year when the permit was issued |
+| `total_project_value` | float | Annual sum of declared `ProjectValue` for residential permits in that year |
+| `median_project_value` | float | Median declared `ProjectValue` for residential permits in that year |
+| `mean_project_value` | float | Average declared `ProjectValue` for residential permits in that year |
+| `permit_count` | int | Number of unique `PermitNumber` values for residential permits issued in that year |
+
+**Caveats:**
+- `ProjectValue` is the declared construction/project value as submitted by the permit applicant. It is not the BC Assessment assessed value and is not a property market sale price.
+- All values are in nominal Canadian dollars and are not adjusted for inflation. Year-over-year comparisons should account for this limitation.
+- Large individual projects such as high-rise apartment buildings can significantly skew annual `total_project_value` and `mean_project_value`. The `median_project_value` column is included as a robustness metric that is less sensitive to such outliers.
+- Permits with a `ProjectValue` of zero were retained in the dataset. Their presence is documented in the validation output of the source notebook.
+
+---
+
+*Last updated: 2026-06-20. Update this file whenever a new column is introduced into analysis.*
