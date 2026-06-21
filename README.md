@@ -65,6 +65,28 @@ The following derived outputs are small enough to commit to version control and 
 
 ---
 
+## Initial Visual Outputs
+
+The project currently includes two initial visual outputs based on processed annual residential building permit metrics.
+
+### Annual Residential Permit Count
+
+![Residential building permits issued by year](visuals/permit_count_by_year.png)
+
+This chart shows the annual count of unique residential building permits issued in Vancouver from 2019 to 2024, using permits where `PropertyUse` contains `"Dwelling Uses"`.
+
+The count fluctuates across the period, with the highest permit count in 2022. This metric should be interpreted as permitting activity, not as completed housing units.
+
+### Annual Residential Permit Project Value
+
+![Residential building permit project value by year](visuals/permit_project_value_by_year.png)
+
+This chart shows the annual sum of declared `ProjectValue` for residential building permits from 2019 to 2024.
+
+The total declared project value increases notably in 2022 and 2023 compared with earlier years. However, `ProjectValue` represents declared or estimated project value, not market value, and large projects may disproportionately affect annual totals.
+
+---
+
 ## Repository Structure
 
 ```
