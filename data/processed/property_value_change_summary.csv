@@ -1,0 +1,5 @@
+metric,total_rows,non_null,missing,negative_total_count,inf_count,extreme_high_count,extreme_low_count
+current_total_assessed_value,1552663,1526086,26577,0,0,378,445
+previous_total_assessed_value,1552663,1510043,42620,0,0,378,445
+absolute_value_change,1552663,1508105,44558,0,0,378,445
+percentage_value_change,1552663,1508104,44559,0,0,378,445
