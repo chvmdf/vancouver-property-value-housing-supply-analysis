@@ -205,4 +205,51 @@ The following four columns are computed for every property record in the full Pr
 
 ---
 
+### File: `data/processed/property_value_change_by_neighbourhood.csv`
+
+**Source notebook:** `notebooks/08_neighbourhood_property_value_analysis.ipynb`  
+**Source raw dataset:** `data/raw/property_tax_report_raw.csv`  
+**Analytical grain:** One row per `NEIGHBOURHOOD_CODE` (30 rows total)  
+**Git tracking:** Tracked  --  small aggregated file suitable for version control
+
+This file contains neighbourhood-level aggregations of the four derived property value change metrics across all 1,552,663 property records in the full Property Tax Report. Each row represents one City of Vancouver neighbourhood code. The geography field was selected after a sample inspection of all geography candidate columns in the Property Tax Report -- see Section 10 of Notebook 08 for the full decision rationale.
+
+| Column | Type | Plain-English Meaning |
+|---|---|---|
+| `neighbourhood_code` | int | City of Vancouver neighbourhood code identifying the geographic area. Sourced from `NEIGHBOURHOOD_CODE` in the Property Tax Report. Not a human-readable label -- see caveats below. |
+| `property_count` | int | Total number of property records in the full Property Tax Report assigned to this neighbourhood code. |
+| `valid_percentage_change_count` | int | Number of records in this neighbourhood where `percentage_value_change` was successfully computed (non-null). |
+| `median_current_total_assessed_value` | float | Median total BC Assessment assessed value (current year) across all property records in this neighbourhood. |
+| `median_previous_total_assessed_value` | float | Median total BC Assessment assessed value (prior year) across all property records in this neighbourhood. |
+| `median_absolute_value_change` | float | Median year-over-year absolute change in total assessed value (Canadian dollars) across property records in this neighbourhood. |
+| `median_percentage_value_change` | float | Median year-over-year percentage change in total assessed value across property records in this neighbourhood. Null records are excluded from the median. |
+| `mean_percentage_value_change` | float | Mean year-over-year percentage change in total assessed value. Sensitive to extreme values -- use with caution. |
+| `increase_count` | int | Number of records in this neighbourhood where `percentage_value_change > 0`. |
+| `decrease_count` | int | Number of records in this neighbourhood where `percentage_value_change < 0`. |
+| `no_change_count` | int | Number of records in this neighbourhood where `percentage_value_change == 0`. |
+| `missing_percentage_change_count` | int | Number of records in this neighbourhood where `percentage_value_change` could not be computed (null). |
+| `share_increase` | float | `increase_count / property_count * 100`. Percentage of all records in this neighbourhood with a positive year-over-year change. |
+| `share_decrease` | float | `decrease_count / property_count * 100`. Percentage of all records in this neighbourhood with a negative year-over-year change. |
+| `share_no_change` | float | `no_change_count / property_count * 100`. Percentage of all records in this neighbourhood with no year-over-year change. |
+| `share_missing_percentage_change` | float | `missing_percentage_change_count / property_count * 100`. Percentage of all records in this neighbourhood where `percentage_value_change` could not be computed. |
+| `extreme_high_count` | int | Number of records in this neighbourhood where `percentage_value_change > 50`. |
+| `extreme_low_count` | int | Number of records in this neighbourhood where `percentage_value_change < -50`. |
+
+**Validation at generation time:**
+- Total rows processed from the full Property Tax Report: 1,552,663
+- Output shape: 30 rows x 18 columns
+- Sum of `property_count` across all neighbourhood codes: 1,552,663 (matches total rows processed)
+- Sum of `valid_percentage_change_count` plus sum of `missing_percentage_change_count`: 1,552,663
+- Duplicate `neighbourhood_code` values: 0
+- Missing `neighbourhood_code` values: 0
+
+**Caveats:**
+- `neighbourhood_code` is a coded geography field. The numeric codes identify City of Vancouver neighbourhood areas but are not human-readable labels. A mapping table or official City of Vancouver documentation may be needed to convert codes into readable neighbourhood names for recruiter-facing or public-facing outputs.
+- All assessed value metrics reflect BC Assessment administrative property valuations used for property tax purposes. They are not MLS sale prices, transaction prices, or market values.
+- `mean_percentage_value_change` is sensitive to extreme percentage changes. The `median_percentage_value_change` column is the more robust alternative.
+- `extreme_high_count` and `extreme_low_count` are descriptive flags, not filters. Extreme changes may reflect legitimate events such as redevelopment, subdivision, or zoning reclassification. No records are excluded on the basis of these counts.
+- This output is descriptive. No causal claims are made between neighbourhood-level assessed value patterns and housing supply, permit activity, or market prices.
+
+---
+
 *Last updated: 2026-06-22. Update this file whenever a new column is introduced into analysis.*

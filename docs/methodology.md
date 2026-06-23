@@ -117,3 +117,54 @@ BC Assessment assessed values are administrative property valuations used as the
 Outliers and extreme percentage changes documented in `property_value_change_summary.csv` are retained at this stage. Extreme changes may reflect legitimate events  --  redevelopment, subdivision, or zoning reclassification  --  rather than data errors, and are flagged for future investigation rather than filtered out preemptively.
 
 No causal claims are made between assessed property value changes and housing supply, permit activity, or market prices.
+
+---
+
+## Neighbourhood-Level Property Value Aggregation Methodology
+
+This section documents the aggregation approach used to generate neighbourhood-level property value metrics from the full Property Tax Report. Full implementation details, including the sample aggregation dry run and the guarded full-processing workflow, are in `notebooks/08_neighbourhood_property_value_analysis.ipynb`.
+
+### Geography Field Selection
+
+`NEIGHBOURHOOD_CODE` was selected as the geography field for neighbourhood-level grouping after a sample inspection of all geography-related columns in the Property Tax Report. Six candidate columns were evaluated on missing rate and value distribution in a 1,000-row sample:
+
+- `LAND_COORDINATE` and `STREET_NAME` are complete in the sample but too granular for a neighbourhood-level summary (751 and 274 unique values in 1,000 rows).
+- `PROPERTY_POSTAL_CODE` is also too granular and has a small number of missing values.
+- `ZONING_DISTRICT` reflects land-use classification, not neighbourhood geography, and is better suited to a separate zoning-level analysis.
+- `DISTRICT_LOT` is a legal land description unit with missing values in the sample and is less interpretable for a business audience.
+- `NEIGHBOURHOOD_CODE` has zero missing values in the sample, 30 unique values, and is designed specifically for grouping City of Vancouver properties by neighbourhood area.
+
+The decision is documented in Section 10 of Notebook 08. `NEIGHBOURHOOD_CODE` is a coded field -- a mapping table or official City of Vancouver documentation may be needed to convert codes into readable neighbourhood labels for public-facing outputs.
+
+### Chunked Processing
+
+The full Property Tax Report (approximately 443 MB) was processed using chunked reading with `pd.read_csv(..., chunksize=100_000)`, the same approach used in Notebooks 05 and 06. For each chunk:
+
+1. Value columns (`CURRENT_LAND_VALUE`, `CURRENT_IMPROVEMENT_VALUE`, `PREVIOUS_LAND_VALUE`, `PREVIOUS_IMPROVEMENT_VALUE`) are converted to numeric using `pd.to_numeric(..., errors='coerce')`.
+2. The four derived value-change metrics are computed using the same logic as `compute_value_change_features()` in Notebook 05, ensuring consistency with `property_value_change_summary.csv` and `property_value_change_distribution.csv`.
+3. Only the geography field and the four derived columns are retained per chunk before appending, keeping peak memory usage low.
+
+### Feature Engineering Consistency
+
+The derived metrics match the Notebook 05 definitions exactly:
+
+- `current_total_assessed_value` = `CURRENT_LAND_VALUE + CURRENT_IMPROVEMENT_VALUE` (null if either component is missing)
+- `previous_total_assessed_value` = `PREVIOUS_LAND_VALUE + PREVIOUS_IMPROVEMENT_VALUE` (null if either component is missing)
+- `absolute_value_change` = `current_total_assessed_value - previous_total_assessed_value` (null if either total is null)
+- `percentage_value_change` = `absolute_value_change / previous_total_assessed_value * 100` (null when previous total is null, zero, or negative)
+
+This consistency requirement is enforced because `property_value_change_summary.csv` was already generated from the full dataset using those definitions. The neighbourhood-level aggregations must use identical formulas to remain interpretable alongside the existing row-level metrics.
+
+### Aggregation
+
+After concatenating all slim chunks into a single DataFrame, records are grouped by `NEIGHBOURHOOD_CODE`. For each neighbourhood code, 18 output metrics are computed: total property count, valid and missing percentage-change counts, median and mean assessed value and change metrics, increase and decrease and no-change counts, share metrics (as percentages of `property_count`), and extreme-change counts (`percentage_value_change > 50` and `percentage_value_change < -50`).
+
+The output is saved to `data/processed/property_value_change_by_neighbourhood.csv` -- 30 rows and 18 columns, one row per neighbourhood code. Three validation assertions confirm that the aggregated row counts match the total rows processed and that no duplicate neighbourhood codes are present.
+
+### Safety Flag
+
+Full processing in Notebook 08 is controlled by `RUN_FULL_PROCESSING`, which is set to `False` by default. This prevents the 443 MB raw file from being processed accidentally. The flag is returned to `False` after full processing is complete.
+
+### Assessed Values Are Not Market Prices
+
+All assessed value metrics in the neighbourhood-level output reflect BC Assessment administrative property valuations used for property tax purposes. They are not MLS sale prices, transaction prices, or appraisals. Neighbourhood-level patterns in assessed value change should be interpreted as administrative valuation signals, not as direct measures of market appreciation or depreciation. No causal claims are made between these patterns and housing supply, permit activity, or market prices.
