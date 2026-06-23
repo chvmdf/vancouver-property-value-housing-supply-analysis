@@ -52,6 +52,22 @@ Derived from `data/raw/issued_building_permits_raw.csv` using the full dataset, 
 | `permit_count_by_year` | Number of distinct residential permits issued per year, counted by unique `PermitNumber` |
 | `permit_project_value_by_year` | Annual sum, median, mean, and permit count of declared `ProjectValue` for residential permits per year |
 
+### Neighbourhood-Code-Level Property Value Summary
+
+Derived from the full Property Tax Report using chunked processing, aggregated by `neighbourhood_code`.
+
+Neighbourhood-code-level property value summary, aggregating assessed value change metrics across 30 coded geography areas from the Property Tax Report. The output covers 1,552,663 property records with no duplicate or missing neighbourhood codes.
+
+| Feature | Description |
+|---|---|
+| `property_count` | Total number of property records in each `neighbourhood_code` group |
+| `median_current_total_assessed_value` | Median current total assessed value across parcels in the group |
+| `median_previous_total_assessed_value` | Median prior-year total assessed value across parcels in the group |
+| `median_percentage_value_change` | Median year-over-year percentage change in assessed value within the group |
+| `mean_percentage_value_change` | Mean year-over-year percentage change within the group |
+| `share_increase` / `share_decrease` / `share_no_change` | Share of parcels with an increase, decrease, or no change in assessed value |
+| `extreme_high_count` / `extreme_low_count` | Count of parcels with extreme percentage changes (quality-control flags) |
+
 ---
 
 ## Processed Files
@@ -64,6 +80,7 @@ The following derived outputs are small enough to commit to version control and 
 | `data/processed/permit_project_value_by_year.csv` | 6 | One row per year (2019-2024): `IssueYear`, `total_project_value`, `median_project_value`, `mean_project_value`, `permit_count` |
 | `data/processed/property_value_change_summary.csv` | 4 | Quality-control summary for the four derived property value change metrics; includes total row counts, non-null counts, missing counts, and quality flags (negative values, infinities, extreme changes) |
 | `data/processed/property_value_change_distribution_bins.csv` | 10 | One row per percentage-change bucket; distribution of `percentage_value_change` across all 1,552,663 property records in the Property Tax Report |
+| `data/processed/property_value_change_by_neighbourhood.csv` | 30 | Aggregated property-value change metrics by `neighbourhood_code`, including property counts, median assessed values, median and mean percentage change, increase/decrease shares, missing-change share, and extreme-change counts |
 
 > `data/processed/property_value_change_distribution.csv` is generated locally during processing (~68.47 MB) but is excluded from Git due to file size. It is an intermediate file used to produce the binned summary above.
 
@@ -71,7 +88,7 @@ The following derived outputs are small enough to commit to version control and 
 
 ## Visual Outputs
 
-The project currently includes three visual outputs. The first two are based on processed annual residential building permit metrics; the third shows the distribution of year-over-year assessed property value changes.
+The project currently includes four visual outputs. The first two are based on processed annual residential building permit metrics; the third shows the distribution of year-over-year assessed property value changes; the fourth shows median assessed property value change by neighbourhood code.
 
 ### Annual Residential Permit Count
 
@@ -96,6 +113,16 @@ The total declared project value increases notably in 2022 and 2023 compared wit
 This chart shows the distribution of year-over-year assessed property value changes across property records in the City of Vancouver Property Tax Report. The values are grouped into percentage-change buckets generated from the processed property value distribution output.
 
 Assessed values are administrative property valuations used for property tax purposes. They are not MLS sale prices, transaction prices, or direct measures of market appreciation.
+
+### Median Assessed Property Value Change by Neighbourhood Code
+
+![Median assessed property value change by neighbourhood code](visuals/median_property_value_change_by_neighbourhood_code.png)
+
+Median assessed property value change by neighbourhood code.
+
+> **Note:** Neighbourhood codes are coded geography fields, not human-readable neighbourhood names. A mapping table or official documentation may be needed later to convert codes into readable labels.
+
+Assessed values are administrative valuations for property tax purposes, not MLS sale prices.
 
 ---
 
@@ -124,6 +151,7 @@ src/              # Reusable Python scripts extracted from notebooks (future)
 - The 2019-2024 time window captures the pre- and post-pandemic period of significant housing market movement in Vancouver, and is the scope for which data quality has been validated within this project.
 - The full Property Tax Report (~443 MB) was processed using chunked reading (`pd.read_csv(..., chunksize=100_000)`) to avoid loading the entire file into memory at once. The row-level output (~68.47 MB) is excluded from Git; the tracked portfolio-ready output is a 10-row binned distribution summary.
 - Outliers and extreme percentage changes in the property value data are flagged with quality-control counts but are not removed at this stage. They may reflect legitimate events such as redevelopment, subdivision, or zoning reclassification.
+- Property-value metrics were also aggregated by `NEIGHBOURHOOD_CODE` using chunked processing to produce a small, portfolio-ready neighbourhood-code-level summary.
 
 Full methodology is documented in [`docs/methodology.md`](docs/methodology.md).
 
@@ -136,6 +164,8 @@ Full methodology is documented in [`docs/methodology.md`](docs/methodology.md).
 - **`ProjectValue` != property market value.** It is the applicant-declared estimated construction cost and is not independently verified at the time of permit issuance.
 - **`ProjectValue` totals are nominal.** No inflation adjustment has been applied. Year-over-year comparisons of total project value reflect both changes in construction volume and changes in construction costs.
 - **Large projects can skew totals.** A single high-rise development can materially affect annual `total_project_value` and `mean_project_value`. The `median_project_value` column is included as a more robust alternative.
+- **`NEIGHBOURHOOD_CODE` is not a readable neighbourhood name.** It is a coded geography field from the Property Tax Report. A mapping table or official documentation would be required to translate codes into human-readable neighbourhood labels.
+- **The neighbourhood-code analysis is descriptive only.** It should not be interpreted causally. Differences in assessed value change across neighbourhood codes do not imply that any factor, including permit activity, caused those differences.
 
 ---
 
@@ -155,10 +185,11 @@ Full methodology is documented in [`docs/methodology.md`](docs/methodology.md).
 - [x] Permit trend visualizations (Notebook 04)
 - [x] Full Property Tax Report processed with chunked reading and validated exports (Notebooks 05-06)
 - [x] Assessed value change distribution visualized from processed binned output (Notebook 07)
+- [x] Neighbourhood-code-level property value output: 30-row aggregated summary across 1,552,663 property records (Notebook 08)
+- [x] Neighbourhood-code-level property value visualization exported to `visuals/` (Notebook 09)
 
 **In Progress / Next**
 
-- [ ] Neighbourhood-level analysis -- spatial breakdown by `GeoLocalArea` and `NEIGHBOURHOOD_CODE`
 - [ ] Cross-dataset alignment -- joining permit and property tax data by area and year
 - [ ] Final business narrative and conclusions
 - [ ] Dashboard or portfolio presentation
