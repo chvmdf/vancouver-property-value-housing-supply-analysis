@@ -168,3 +168,13 @@ Full processing in Notebook 08 is controlled by `RUN_FULL_PROCESSING`, which is 
 ### Assessed Values Are Not Market Prices
 
 All assessed value metrics in the neighbourhood-level output reflect BC Assessment administrative property valuations used for property tax purposes. They are not MLS sale prices, transaction prices, or appraisals. Neighbourhood-level patterns in assessed value change should be interpreted as administrative valuation signals, not as direct measures of market appreciation or depreciation. No causal claims are made between these patterns and housing supply, permit activity, or market prices.
+
+### Neighbourhood Code Geography Limitation
+
+`NEIGHBOURHOOD_CODE` comes from the City of Vancouver Property Tax Report and is treated as a BC Assessment coded geography field throughout this project. It is a 3-digit code assigned by BC Assessment (BCA) to organise properties into appraisal areas. The City of Vancouver publishes the numeric code in the open data file but does not publish a corresponding readable neighbourhood name field. According to the City's open data documentation, BCA does not supply the City with the referencing neighbourhood name information.
+
+The project does not convert these codes into readable neighbourhood names because no official public mapping was found during research. A readable code-to-name lookup may exist in BC Assessment restricted or commercial data products, but those are not part of the public City of Vancouver open-data files used in this project. No manual mapping from street names, postal codes, or address fields has been created, as those fields do not carry neighbourhood name information and cannot be used to reliably infer it.
+
+Results reported by `neighbourhood_code` are descriptive and fully reproducible from the public source data. The 30 BCA neighbourhood codes are not assumed to match the City of Vancouver's 22 Local Areas. These are distinct geography systems, and substituting one for the other without a verified official crosswalk would introduce unverifiable geographic labelling.
+
+A future enhancement could resolve this in one of two ways: obtain an official BC Assessment code-to-name mapping (the path suggested by the City's open data documentation), or create a separate analysis using City of Vancouver Local Area boundaries via an appropriate spatial assignment method. Either path would require a distinct analytical step and should not be treated as a simple rename of the existing 30-code output.
