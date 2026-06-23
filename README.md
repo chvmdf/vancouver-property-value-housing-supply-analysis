@@ -12,9 +12,9 @@ This project explores Vancouver property assessment values and residential build
 
 ## Why This Project Matters
 
-Vancouver's housing affordability is one of the most prominent public policy issues in Canada. Assessed values, construction permits, and investment intensity are all publicly available — yet rarely combined in a single, documented analytical pipeline. This project demonstrates that public data can surface meaningful patterns in where and how much new residential supply is being approved, and how those signals align with shifts in assessed property values.
+Vancouver's housing affordability is one of the most prominent public policy issues in Canada. Assessed values, construction permits, and investment intensity are all publicly available -- yet rarely combined in a single, documented analytical pipeline. This project demonstrates that public data can surface meaningful patterns in where and how much new residential supply is being approved, and how those signals align with shifts in assessed property values.
 
-Beyond the subject matter, the project demonstrates a full analytics workflow: data acquisition decisions, cleaning, feature engineering, output validation, and structured documentation — skills directly applicable to data analyst and analytics engineering roles.
+Beyond the subject matter, the project demonstrates a full analytics workflow: data acquisition decisions, cleaning, feature engineering, output validation, and structured documentation -- skills directly applicable to data analyst and analytics engineering roles.
 
 ---
 
@@ -22,7 +22,7 @@ Beyond the subject matter, the project demonstrates a full analytics workflow: d
 
 | Dataset | Source | Role in Project | Status |
 |---|---|---|---|
-| Property Tax Report | City of Vancouver Open Data | Property assessment values — land, improvements, year-over-year change | Downloaded; used for feature engineering |
+| Property Tax Report | City of Vancouver Open Data | Property assessment values -- land, improvements, year-over-year change | Downloaded; used for feature engineering |
 | Issued Building Permits | City of Vancouver Open Data | Residential permit activity and declared project value by year | Downloaded; filtered, aggregated, and exported to `data/processed/` |
 | StatCan / CMHC contextual data | Statistics Canada / CMHC | Optional future context (population, mortgage rates, rental vacancy) | Not currently part of core pipeline |
 
@@ -45,7 +45,7 @@ Derived from `data/raw/property_tax_report_raw.csv` using a validated 1,000-row 
 
 ### Residential Building Permit Metrics
 
-Derived from `data/raw/issued_building_permits_raw.csv` using the full dataset, filtered to residential permits (2019–2024).
+Derived from `data/raw/issued_building_permits_raw.csv` using the full dataset, filtered to residential permits (2019-2024).
 
 | Feature | Description |
 |---|---|
@@ -60,14 +60,18 @@ The following derived outputs are small enough to commit to version control and 
 
 | File | Rows | Description |
 |---|---|---|
-| `data/processed/permit_count_by_year.csv` | 6 | One row per year (2019–2024): `IssueYear`, `permit_count` |
-| `data/processed/permit_project_value_by_year.csv` | 6 | One row per year (2019–2024): `IssueYear`, `total_project_value`, `median_project_value`, `mean_project_value`, `permit_count` |
+| `data/processed/permit_count_by_year.csv` | 6 | One row per year (2019-2024): `IssueYear`, `permit_count` |
+| `data/processed/permit_project_value_by_year.csv` | 6 | One row per year (2019-2024): `IssueYear`, `total_project_value`, `median_project_value`, `mean_project_value`, `permit_count` |
+| `data/processed/property_value_change_summary.csv` | 4 | Quality-control summary for the four derived property value change metrics; includes total row counts, non-null counts, missing counts, and quality flags (negative values, infinities, extreme changes) |
+| `data/processed/property_value_change_distribution_bins.csv` | 10 | One row per percentage-change bucket; distribution of `percentage_value_change` across all 1,552,663 property records in the Property Tax Report |
+
+> `data/processed/property_value_change_distribution.csv` is generated locally during processing (~68.47 MB) but is excluded from Git due to file size. It is an intermediate file used to produce the binned summary above.
 
 ---
 
-## Initial Visual Outputs
+## Visual Outputs
 
-The project currently includes two initial visual outputs based on processed annual residential building permit metrics.
+The project currently includes three visual outputs. The first two are based on processed annual residential building permit metrics; the third shows the distribution of year-over-year assessed property value changes.
 
 ### Annual Residential Permit Count
 
@@ -85,17 +89,25 @@ This chart shows the annual sum of declared `ProjectValue` for residential build
 
 The total declared project value increases notably in 2022 and 2023 compared with earlier years. However, `ProjectValue` represents declared or estimated project value, not market value, and large projects may disproportionately affect annual totals.
 
+### Assessed Property Value Change Distribution
+
+![Distribution of assessed property value changes](visuals/property_value_change_distribution_bins.png)
+
+This chart shows the distribution of year-over-year assessed property value changes across property records in the City of Vancouver Property Tax Report. The values are grouped into percentage-change buckets generated from the processed property value distribution output.
+
+Assessed values are administrative property valuations used for property tax purposes. They are not MLS sale prices, transaction prices, or direct measures of market appreciation.
+
 ---
 
 ## Repository Structure
 
 ```
 data/
-  raw/            # Original source files — never modified, excluded from Git
-  processed/      # Derived analytical outputs — tracked in Git
+  raw/            # Original source files -- never modified, excluded from Git
+  processed/      # Derived analytical outputs -- tracked in Git
 notebooks/        # Numbered Jupyter notebooks, intended to be run in order
 docs/             # Methodology, data dictionary, dataset decision log, business narrative
-visuals/          # Exported charts (future)
+visuals/          # Exported charts
 dashboard/        # Dashboard assets (future)
 src/              # Reusable Python scripts extracted from notebooks (future)
 ```
@@ -104,12 +116,14 @@ src/              # Reusable Python scripts extracted from notebooks (future)
 
 ## Methodology Summary
 
-- Raw data files are kept strictly separate from processed outputs. Files in `data/raw/` are immutable — they are never modified or overwritten.
+- Raw data files are kept strictly separate from processed outputs. Files in `data/raw/` are immutable -- they are never modified or overwritten.
 - Large raw files (56 MB+) are excluded from Git via `.gitignore`. Only small, validated derived outputs are committed.
 - Derived features are validated with explicit checks (null rate, range, infinity detection) before being considered complete.
 - Building permit counts use `nunique()` on `PermitNumber` within each year to avoid inflating counts from amended or reissued permits.
 - Residential permits are isolated by filtering `PropertyUse` for records containing the substring `"Dwelling Uses"` (case-insensitive, null-safe). This is more reliable than `PermitCategory`, which has a high null rate in the full dataset.
-- The 2019–2024 time window captures the pre- and post-pandemic period of significant housing market movement in Metro Vancouver, and is the scope for which data quality has been validated within this project.
+- The 2019-2024 time window captures the pre- and post-pandemic period of significant housing market movement in Vancouver, and is the scope for which data quality has been validated within this project.
+- The full Property Tax Report (~443 MB) was processed using chunked reading (`pd.read_csv(..., chunksize=100_000)`) to avoid loading the entire file into memory at once. The row-level output (~68.47 MB) is excluded from Git; the tracked portfolio-ready output is a 10-row binned distribution summary.
+- Outliers and extreme percentage changes in the property value data are flagged with quality-control counts but are not removed at this stage. They may reflect legitimate events such as redevelopment, subdivision, or zoning reclassification.
 
 Full methodology is documented in [`docs/methodology.md`](docs/methodology.md).
 
@@ -117,9 +131,9 @@ Full methodology is documented in [`docs/methodology.md`](docs/methodology.md).
 
 ## Key Caveats
 
-- **Assessed value ≠ sale price.** BC Assessment valuations reflect assessed value at a point in time, not MLS transaction prices or market value.
-- **Permits ≠ completed housing units.** A building permit is issued before construction begins and does not confirm the project was completed, occupied, or added to the housing stock.
-- **`ProjectValue` ≠ property market value.** It is the applicant-declared estimated construction cost and is not independently verified at the time of permit issuance.
+- **Assessed value != sale price.** BC Assessment valuations reflect assessed value at a point in time, not MLS transaction prices or market value.
+- **Permits != completed housing units.** A building permit is issued before construction begins and does not confirm the project was completed, occupied, or added to the housing stock.
+- **`ProjectValue` != property market value.** It is the applicant-declared estimated construction cost and is not independently verified at the time of permit issuance.
 - **`ProjectValue` totals are nominal.** No inflation adjustment has been applied. Year-over-year comparisons of total project value reflect both changes in construction volume and changes in construction costs.
 - **Large projects can skew totals.** A single high-rise development can materially affect annual `total_project_value` and `mean_project_value`. The `median_project_value` column is included as a more robust alternative.
 
@@ -138,12 +152,14 @@ Full methodology is documented in [`docs/methodology.md`](docs/methodology.md).
 - [x] Processed annual permit exports to `data/processed/`
 - [x] Data dictionary updated for all datasets and derived outputs
 - [x] Methodology documented
+- [x] Permit trend visualizations (Notebook 04)
+- [x] Full Property Tax Report processed with chunked reading and validated exports (Notebooks 05-06)
+- [x] Assessed value change distribution visualized from processed binned output (Notebook 07)
 
 **In Progress / Next**
 
-- [ ] Visualisations — annual permit trends, assessed value distributions
-- [ ] Neighbourhood-level analysis — spatial breakdown by `GeoLocalArea` and `NEIGHBOURHOOD_CODE`
-- [ ] Cross-dataset alignment — joining permit and property tax data by area and year
+- [ ] Neighbourhood-level analysis -- spatial breakdown by `GeoLocalArea` and `NEIGHBOURHOOD_CODE`
+- [ ] Cross-dataset alignment -- joining permit and property tax data by area and year
 - [ ] Final business narrative and conclusions
 - [ ] Dashboard or portfolio presentation
 
@@ -151,7 +167,7 @@ Full methodology is documented in [`docs/methodology.md`](docs/methodology.md).
 
 ## Skills Demonstrated
 
-`Python` · `pandas` · `data cleaning` · `feature engineering` · `data validation` · `Git / GitHub workflow` · `documentation` · `business analysis` · `public-data storytelling`
+`Python` | `pandas` | `data cleaning` | `feature engineering` | `data validation` | `Git / GitHub workflow` | `documentation` | `business analysis` | `public-data storytelling`
 
 ---
 
