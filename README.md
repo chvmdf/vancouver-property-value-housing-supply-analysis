@@ -12,7 +12,7 @@ A reproducible Python analytics project exploring assessed property values and r
 - **Descriptive visualization** — four portfolio-ready charts exported at 300 dpi with proper caveats
 - **Reproducible workflow** — numbered notebooks, immutable raw data, committed processed outputs, full methodology documentation
 - **Business communication** — findings documented for a non-technical audience with honest scope and limitations
-- **Next step: Power BI dashboard** — processed CSVs are clean, small, and ready for direct import
+- **Power BI dashboard** — two-page descriptive dashboard built from processed CSV outputs; screenshots included
 
 ---
 
@@ -91,6 +91,28 @@ Median year-over-year assessed value change by `neighbourhood_code`. Neighbourho
 
 ---
 
+## Power BI Dashboard
+
+The project includes a two-page Power BI dashboard built from the processed analytical outputs.
+
+**Dashboard file:** [`dashboard/Vancouver_Property_Value_Housing_Supply_Analysis.pbix`](dashboard/Vancouver_Property_Value_Housing_Supply_Analysis.pbix)
+
+### Page 1: Executive Overview
+
+Summarizes residential building permit activity by year, declared residential permit project value by year, and the distribution of assessed property value changes across all property records.
+
+![Page 1 — Executive Overview](dashboard/powerbi_screenshots/page_1_executive_overview.png)
+
+### Page 2: BCA-Coded Geography View
+
+Shows assessed property value change patterns by `NEIGHBOURHOOD_CODE`, treated as a BC Assessment coded geography field. Displays median percentage value change, property counts, and shares of properties with assessed value increases and decreases across the 30 BCA-coded areas.
+
+![Page 2 — BCA-Coded Geography View](dashboard/powerbi_screenshots/page_2_bca_coded_geography_view.png)
+
+See [`dashboard/README.md`](dashboard/README.md) for the full build plan, data source list, KPIs, and methodology notes.
+
+---
+
 ## Repository Structure
 
 ```
@@ -100,7 +122,7 @@ data/
 notebooks/        # Numbered Jupyter notebooks, run in order
 docs/             # Methodology, data dictionary, dataset log, analysis narrative
 visuals/          # Exported charts (300 dpi PNG)
-dashboard/        # Dashboard assets (planned)
+dashboard/        # Power BI dashboard, screenshots, and build documentation
 src/              # Reusable scripts extracted from notebooks (future)
 ```
 
@@ -163,7 +185,7 @@ A future enhancement could obtain an official BC Assessment mapping or build a s
 
 **Next**
 
-- [ ] Power BI dashboard using processed CSV outputs (permit counts, project value, distribution bins, neighbourhood-code summary)
+- [x] Power BI dashboard using processed CSV outputs (permit counts, project value, distribution bins, neighbourhood-code summary)
 - [ ] Cross-dataset alignment — joining permit and property tax data by area and year
 - [ ] City Local Area analysis using spatial assignment (separate from BCA neighbourhood codes)
 

@@ -1,5 +1,41 @@
 # Power BI Dashboard Plan
 
+## Power BI Dashboard
+
+The dashboard has been built using the validated processed CSV outputs from the Python workflow. It is a two-page descriptive summary of residential building permit activity and assessed property value change patterns in Metro Vancouver.
+
+**Dashboard file:** [`Vancouver_Property_Value_Housing_Supply_Analysis.pbix`](Vancouver_Property_Value_Housing_Supply_Analysis.pbix)
+
+---
+
+### Page 1: Executive Overview
+
+Summarizes residential building permit activity by year, declared residential permit project value by year, and the distribution of assessed property value changes across all property records.
+
+![Page 1 — Executive Overview](powerbi_screenshots/page_1_executive_overview.png)
+
+---
+
+### Page 2: BCA-Coded Geography View
+
+Shows assessed property value change patterns by `NEIGHBOURHOOD_CODE`, treated as a BC Assessment coded geography field. Displays median percentage value change, property counts, and shares of properties with assessed value increases and decreases across the 30 BCA-coded areas.
+
+![Page 2 — BCA-Coded Geography View](powerbi_screenshots/page_2_bca_coded_geography_view.png)
+
+---
+
+### Methodology Notes
+
+- Assessed values are administrative valuations set by BC Assessment and are not MLS sale prices or market transaction prices.
+- Building permits are not the same as completed housing units. A permit represents an approval, not a delivered unit.
+- Declared project value is not the same as final construction cost or market value.
+- `NEIGHBOURHOOD_CODE` is treated as a BC Assessment coded geography field. It does not map to readable neighbourhood names.
+- No official public lookup was found to convert BCA neighbourhood codes into readable neighbourhood names.
+- The 30 BCA-coded areas are not assumed to match Vancouver's 22 Local Areas.
+- This dashboard is descriptive and does not make causal or forecasting claims.
+
+---
+
 ## 1. Dashboard Purpose
 
 This dashboard is the executive presentation layer of the Vancouver Property Value & Housing Supply Analysis project. The Python notebooks handle all data cleaning, feature engineering, validation, and reproducible analysis. Power BI is used to communicate the final descriptive insights to stakeholders in a clear and accessible format, without re-implementing any analytical logic.
@@ -94,12 +130,10 @@ The following caveats must appear somewhere visible in the dashboard, preferably
 8. Export page screenshots to `dashboard/powerbi_screenshots/`.
 9. Update the main README with dashboard screenshots when ready.
 
-## 9. Files to Export Later
+## 9. Dashboard Files
 
-The following files may be added to this directory once the dashboard is built:
+The following files are included in this directory:
 
-- `dashboard/vancouver_property_value_dashboard.pbix` — the Power BI project file
-- `dashboard/powerbi_screenshots/executive_overview.png` — screenshot of Page 1
-- `dashboard/powerbi_screenshots/bca_coded_geography_view.png` — screenshot of Page 2
-
-The `.pbix` file and screenshots are not included at this stage.
+- `Vancouver_Property_Value_Housing_Supply_Analysis.pbix` — the Power BI project file
+- `powerbi_screenshots/page_1_executive_overview.png` — screenshot of Page 1: Executive Overview
+- `powerbi_screenshots/page_2_bca_coded_geography_view.png` — screenshot of Page 2: BCA-Coded Geography View
