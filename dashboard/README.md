@@ -1,7 +1,5 @@
 # Power BI Dashboard
 
-## Power BI Dashboard
-
 The dashboard has been built using the validated processed CSV outputs from the Python workflow. It is a two-page descriptive summary of residential building permit activity and assessed property value change patterns in the City of Vancouver.
 
 **Dashboard file:** [`Vancouver_Property_Value_Housing_Supply_Analysis.pbix`](Vancouver_Property_Value_Housing_Supply_Analysis.pbix)
@@ -129,8 +127,8 @@ The following caveats must appear somewhere visible in the dashboard, preferably
 5. Build Page 1: Executive Overview using the visuals listed in Section 3.
 6. Build Page 2: BCA-Coded Geography View using the visuals listed in Section 3.
 7. Add a caveats panel to each page using a text box with the language from Section 6.
-8. Export page screenshots to `dashboard/powerbi_screenshots/`.
-9. Update the main README with dashboard screenshots when ready.
+8. Dashboard screenshots are exported to `dashboard/powerbi_screenshots/`.
+9. The main README includes dashboard screenshots and a link to the Power BI file.
 
 ### 9. Dashboard Files
 

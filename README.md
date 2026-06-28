@@ -193,7 +193,7 @@ A future enhancement could obtain an official BC Assessment mapping or build a s
 
 ## Skills Demonstrated
 
-`Python` | `pandas` | `data cleaning` | `feature engineering` | `chunked large-file processing` | `data validation` | `descriptive visualization` | `Git / GitHub workflow` | `methodology documentation` | `business communication` | `public-data analysis`
+`Python` | `pandas` | `Power BI` | `data cleaning` | `feature engineering` | `chunked large-file processing` | `data validation` | `descriptive visualization` | `Git / GitHub workflow` | `methodology documentation` | `business communication` | `public-data analysis`
 
 ---
 
