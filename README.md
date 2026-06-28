@@ -1,6 +1,6 @@
 # Vancouver Property Value & Housing Supply Analysis
 
-A reproducible Python analytics project exploring assessed property values and residential building permit activity in Metro Vancouver, built entirely from public City of Vancouver Open Data. The pipeline runs from raw source files through validated, documented processed outputs and portfolio-ready visualizations.
+A reproducible Python analytics project exploring assessed property values and residential building permit activity in Vancouver, built entirely from public City of Vancouver Open Data. The pipeline runs from raw source files through validated, documented processed outputs and portfolio-ready visualizations.
 
 ---
 
@@ -29,7 +29,7 @@ This is a descriptive analytics question answered from administrative records. T
 | Layer | What it contains |
 |---|---|
 | `notebooks/` | Numbered Python notebooks — the reproducible workflow, run in order |
-| `data/processed/` | Small, validated CSV outputs committed to Git — inputs to visuals and future dashboards |
+| `data/processed/` | Small, validated CSV outputs committed to Git — inputs to visualization notebooks and the Power BI dashboard |
 | `visuals/` | Exported charts summarizing the processed outputs |
 | `docs/` | Methodology decisions, data dictionary, dataset log, and analysis narrative |
 
@@ -51,7 +51,7 @@ Raw files are excluded from version control via `.gitignore`. Dataset inclusion 
 
 ### Processed Files
 
-All files below are small, validated, and tracked in Git. They serve as inputs to visualization notebooks and the planned Power BI dashboard.
+All files below are small, validated, and tracked in Git. They serve as inputs to visualization notebooks and the Power BI dashboard.
 
 | File | Rows | Description |
 |---|---|---|
@@ -75,7 +75,7 @@ Annual count of distinct residential building permits issued in Vancouver, 2019�
 
 ![Residential building permit project value by year](visuals/permit_project_value_by_year.png)
 
-Annual sum of declared `ProjectValue` for residential permits, 2019–2024. `ProjectValue` is the applicant-estimated construction cost — it is not market value and is not independently verified at issuance.
+Annual sum of declared `ProjectValue` for residential permits, 2019–2024. `ProjectValue` is the applicant-declared project value — it is not the same as final construction cost or market value, and is not independently verified at issuance.
 
 #### Assessed Property Value Change Distribution
 
@@ -182,10 +182,10 @@ A future enhancement could obtain an official BC Assessment mapping or build a s
 - [x] Neighbourhood-code-level property value visualization exported to `visuals/` (Notebook 09)
 - [x] Neighbourhood code mapping investigation — official mapping not found; limitation documented (Notebook 10)
 - [x] Analysis narrative written (`docs/analysis_narrative.md`)
+- [x] Power BI dashboard using processed CSV outputs (permit counts, project value, distribution bins, neighbourhood-code summary)
 
 **Next**
 
-- [x] Power BI dashboard using processed CSV outputs (permit counts, project value, distribution bins, neighbourhood-code summary)
 - [ ] Cross-dataset alignment — joining permit and property tax data by area and year
 - [ ] City Local Area analysis using spatial assignment (separate from BCA neighbourhood codes)
 

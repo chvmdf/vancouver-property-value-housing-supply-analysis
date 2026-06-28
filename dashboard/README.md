@@ -1,8 +1,8 @@
-# Power BI Dashboard Plan
+# Power BI Dashboard
 
 ## Power BI Dashboard
 
-The dashboard has been built using the validated processed CSV outputs from the Python workflow. It is a two-page descriptive summary of residential building permit activity and assessed property value change patterns in Metro Vancouver.
+The dashboard has been built using the validated processed CSV outputs from the Python workflow. It is a two-page descriptive summary of residential building permit activity and assessed property value change patterns in the City of Vancouver.
 
 **Dashboard file:** [`Vancouver_Property_Value_Housing_Supply_Analysis.pbix`](Vancouver_Property_Value_Housing_Supply_Analysis.pbix)
 
@@ -36,11 +36,13 @@ Shows assessed property value change patterns by `NEIGHBOURHOOD_CODE`, treated a
 
 ---
 
-## 1. Dashboard Purpose
+## Build Plan and Documentation
+
+### 1. Dashboard Purpose
 
 This dashboard is the executive presentation layer of the Vancouver Property Value & Housing Supply Analysis project. The Python notebooks handle all data cleaning, feature engineering, validation, and reproducible analysis. Power BI is used to communicate the final descriptive insights to stakeholders in a clear and accessible format, without re-implementing any analytical logic.
 
-## 2. Recommended Data Sources
+### 2. Recommended Data Sources
 
 Load the following validated processed CSV files into Power BI:
 
@@ -51,9 +53,9 @@ Load the following validated processed CSV files into Power BI:
 
 Power BI should connect to these processed outputs rather than directly to the large raw datasets. The raw files are immutable source data and have not been validated for direct use in a reporting tool.
 
-## 3. Suggested Dashboard Pages
+### 3. Suggested Dashboard Pages
 
-### Page 1: Executive Overview
+#### Page 1: Executive Overview
 
 **Purpose:** Give a high-level view of residential permit activity and assessed property value change patterns across the full dataset.
 
@@ -67,7 +69,7 @@ Power BI should connect to these processed outputs rather than directly to the l
 
 ---
 
-### Page 2: BCA-Coded Geography View
+#### Page 2: BCA-Coded Geography View
 
 **Purpose:** Show descriptive variation in assessed property value change across BC Assessment coded geographies (`neighbourhood_code`).
 
@@ -78,7 +80,7 @@ Power BI should connect to these processed outputs rather than directly to the l
 - Table: `neighbourhood_code`, property count, median current assessed value, median percentage value change, share of properties with assessed value increase, share of properties with assessed value decrease
 - Text box: geography limitation note explaining that `NEIGHBOURHOOD_CODE` is a BC Assessment coded geography field and does not correspond to readable neighbourhood names
 
-## 4. Recommended KPIs and Measures
+### 4. Recommended KPIs and Measures
 
 The following KPIs and measures can be built using the processed CSV fields. These are conceptual descriptions — do not invent specific numeric results.
 
@@ -89,7 +91,7 @@ The following KPIs and measures can be built using the processed CSV fields. The
 - **Share of properties with assessed value increase:** proportion of properties where the assessed value change is positive
 - **Share of properties with assessed value decrease:** proportion of properties where the assessed value change is negative
 
-## 5. Visual Design Guidelines
+### 5. Visual Design Guidelines
 
 - Use clear, descriptive chart titles on every visual.
 - Avoid overcrowding pages — prioritize readability over density.
@@ -100,7 +102,7 @@ The following KPIs and measures can be built using the processed CSV fields. The
 - Apply consistent number formatting: percentages to one decimal place, currency values with dollar signs and thousands separators.
 - Keep the dashboard business-readable — avoid overly technical field names or statistical jargon without explanation.
 
-## 6. Required Caveats Panel
+### 6. Required Caveats Panel
 
 The following caveats must appear somewhere visible in the dashboard, preferably on every page:
 
@@ -112,13 +114,13 @@ The following caveats must appear somewhere visible in the dashboard, preferably
 - The 30 BCA-coded areas in this dataset are not assumed to match Vancouver's 22 Local Areas.
 - This dashboard is descriptive. It does not make causal or forecasting claims.
 
-## 7. Suggested Dashboard Title and Subtitle
+### 7. Suggested Dashboard Title and Subtitle
 
 **Title:** Vancouver Property Value & Residential Permit Activity
 
 **Subtitle:** Descriptive analysis of public assessment and permit data
 
-## 8. Build Sequence
+### 8. Build Sequence
 
 1. Open Power BI Desktop.
 2. Import the four processed CSV files listed in Section 2.
@@ -130,7 +132,7 @@ The following caveats must appear somewhere visible in the dashboard, preferably
 8. Export page screenshots to `dashboard/powerbi_screenshots/`.
 9. Update the main README with dashboard screenshots when ready.
 
-## 9. Dashboard Files
+### 9. Dashboard Files
 
 The following files are included in this directory:
 
